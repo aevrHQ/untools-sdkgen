@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/aevrHQ/untools-sdkgen/compare/v0.1.4...v0.1.5) (2026-03-18)
+
+
+### Documentation
+
+* update package metadata and improve README ([c081ea0](https://github.com/aevrHQ/untools-sdkgen/commit/c081ea0d726f00b2b93deb28c48881df2abe60c4))
+
 ### [0.1.4](https://github.com/aevrHQ/untools-sdkgen/compare/v0.1.3...v0.1.4) (2026-03-18)
 
 
