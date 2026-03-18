@@ -37,7 +37,7 @@ function generateOperationId(method: string, path: string): string {
   const parts = path
     .replace(/[{}]/g, "")
     .split("/")
-    .filter(Boolean);
+    .filter((p) => p && !p.startsWith("{"));
   const pascal = parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join("");
   return `${method}${pascal}`;
 }
