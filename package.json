@@ -1,0 +1,37 @@
+{
+  "name": "@untools/sdkgen",
+  "version": "0.1.0",
+  "description": "Generate TypeScript SDK, Python SDK, and REST fetch wrappers from an OpenAPI spec",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "sdkgen": "./bin/sdkgen.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node bin/sdkgen.js",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major",
+    "release:patch": "standard-version --release-as patch",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "standard-version": "^9.5.0",
+    "ts-node": "^10.9.2"
+  }
+}
