@@ -24,6 +24,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aevrHQ/untools-sdkgen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aevrHQ/untools-sdkgen/issues"
+  },
+  "homepage": "https://github.com/aevrHQ/untools-sdkgen#readme",
   "dependencies": {
     "js-yaml": "^4.1.0",
     "prettier": "^3.5.3",

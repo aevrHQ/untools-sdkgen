@@ -1,4 +1,4 @@
-# sdkgen
+# @untools/sdkgen
 
 > Generate TypeScript SDKs, Python SDKs, and vanilla fetch clients from an OpenAPI spec — local file or URL.
 
@@ -9,35 +9,29 @@ Inspired by [Fern](https://buildwithfern.com). No cloud required, no config file
 ## Install
 
 ```bash
-# Clone / copy this directory, then:
-npm install
-npm run build       # compiles TypeScript → dist/
-npm link            # makes `sdkgen` available globally
-```
+# Install globally
+npm install -g @untools/sdkgen
 
-Or run directly without building:
-```bash
-node bin/sdkgen.js <input> [options]
+# Or run directly via npx
+npx @untools/sdkgen <input> [options]
 ```
 
 ---
 
 ## Usage
 
-```
+```bash
 sdkgen <input> [options]
-
-ARGUMENTS
-  <input>          Path to an OpenAPI JSON/YAML file, or a URL to an
-                   OpenAPI endpoint (e.g. https://api.example.com/openapi.json)
-
-OPTIONS
-  -o, --output     Output directory              [default: ./generated]
-  -l, --lang       Comma-separated targets:
-                     typescript | python | fetch  [default: typescript,python,fetch]
-  -n, --name       Package name                  [default: derived from spec title]
-  -h, --help       Show help
 ```
+
+### Arguments
+- `<input>`: Path to an OpenAPI JSON/YAML file, or a URL to an OpenAPI endpoint (e.g., `https://api.example.com/openapi.json`).
+
+### Options
+- `-o, --output <dir>`: Output directory (default: `./generated`).
+- `-l, --lang <langs>`: Comma-separated list of targets: `typescript`, `python`, `fetch` (default: `typescript,python,fetch`).
+- `-n, --name <name>`: Package name (default: derived from spec title).
+- `-h, --help`: Show help message.
 
 ### Examples
 
@@ -48,22 +42,24 @@ sdkgen ./openapi.json
 # TypeScript + Python from a live URL
 sdkgen https://api.example.com/openapi.json -l typescript,python
 
-# Just fetch wrappers, custom output dir and package name
+# Just fetch wrappers with a custom output directory and package name
 sdkgen ./spec.yaml -l fetch -o ./sdk -n my-api
 ```
 
 ---
 
-## Output structure
+## Output Structure
 
-```
+The tool generates a clean, modular structure for each language:
+
+```text
 generated/
 ├── typescript/
 │   ├── src/
-│   │   ├── types.ts          ← All schema interfaces
+│   │   ├── types.ts          ← All schema interfaces (namespaced)
 │   │   ├── errors.ts         ← APIError class
-│   │   ├── <tag>.ts          ← One typed class per tag
-│   │   └── index.ts          ← Barrel + composite SDK class
+│   │   ├── <tag>.ts          ← Typed client classes per OpenAPI tag
+│   │   └── index.ts          ← Composite SDK entry point
 │   ├── package.json
 │   └── tsconfig.json
 │
@@ -72,72 +68,65 @@ generated/
 │   │   ├── __init__.py       ← Composite SDK class
 │   │   ├── models.py         ← @dataclass models
 │   │   ├── exceptions.py     ← APIError
-│   │   └── <tag>.py          ← One client class per tag
+│   │   └── <tag>.py          ← Client classes per tag
 │   ├── setup.py
 │   └── requirements.txt
 │
 └── fetch/
     ├── config.js             ← createConfig() helper
-    ├── <tag>.js              ← Named async functions per tag
-    ├── index.js              ← Barrel + create<Name>() factory
+    ├── <tag>.js              ← Async functions per tag
+    ├── index.js              ← Factory entry point
     └── package.json
 ```
 
 ---
 
-## What gets generated
+## Key Features
 
 ### TypeScript SDK
-
-- Full interfaces for all `components/schemas`
-- One `class <Tag>Client` per OpenAPI tag, with:
-  - Typed method signatures (path params, query params, request body, return type)
-  - JSDoc from `summary` / `description`
-  - `@deprecated` annotations
-- Composite `<Name>SDK` class grouping all clients
-- `APIError` with status code
+- **Full Type Safety**: Generates interfaces for all schemas with proper namespacing.
+- **Tag-based Clients**: Groups operations by OpenAPI tags for a clean API.
+- **JSDoc Support**: Pulls `summary` and `description` from the spec into your IDE.
+- **Modern Fetch**: Uses vanilla `fetch` with no heavy dependencies.
 
 ### Python SDK
+- **Type Hinting**: Full support for Python type hints.
+- **Data Classes**: Uses `@dataclass` for all models.
+- **Requests-based**: Reliable synchronous clients using the `requests` library.
 
-- `@dataclass` models for all schemas
-- One `class <Tag>Client` per tag using `requests.Session`
-- Snake_case method names, optional params, `raise_for_status()`
-- Composite SDK class injecting a shared session
-
-### Fetch Client
-
-- Zero-dependency, ESM-native
-- One `async function` per endpoint
-- `create<Name>(baseUrl, headers)` factory grouping everything
-- Works in browsers and Node.js ≥ 18
+### Fetch Clients
+- **Zero Dependency**: Lightweight JavaScript wrappers for quick integrations.
+- **Modular**: Only use what you need.
 
 ---
 
-## Supported OpenAPI features
+## Development
 
-| Feature | Supported |
-|---|---|
-| OpenAPI 3.x JSON | ✅ |
-| OpenAPI 3.x YAML | ✅ (requires `js-yaml`) |
-| Swagger 2.0 | ⚠️ Partial |
-| `$ref` resolution | ✅ |
-| Path / query / header params | ✅ |
-| Request bodies (`application/json`) | ✅ |
-| Response schemas | ✅ |
-| `components/schemas` | ✅ |
-| Enum types | ✅ |
-| `allOf` / `oneOf` / `anyOf` | ✅ |
-| `nullable` | ✅ |
-| Deprecated operations | ✅ |
-| Multi-server | ✅ (uses first) |
-| Auth / security schemes | ⚠️ Header passthrough only |
+```bash
+# Clone the repository
+git clone https://github.com/aevrHQ/untools-sdkgen.git
+cd untools-sdkgen/sdkgen
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Link for local testing
+npm link
+```
+
+### Releasing
+This project uses `standard-version` for automated versioning and changelog generation.
+
+```bash
+npm run release        # Standard patch release
+npm run release:minor  # Minor feature release
+npm run release:major  # Major breaking release
+```
 
 ---
 
-## Extending
-
-Each generator is a standalone module in `src/generators/`. To add a new target (e.g. Go, Ruby):
-
-1. Create `src/generators/go.ts` implementing `generateGoSDK(spec, endpoints, outDir, pkgName)`
-2. Register it in `src/index.ts` under the language switch
-3. Add `"go"` to the valid `--lang` values
+## License
+MIT
